@@ -1,0 +1,40 @@
+name: Windows build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      # PyPI's Windows torch wheel is CPU only and we want CUDA builds
+      - name: Install CUDA torch
+        run: pip install --index-url https://download.pytorch.org/whl/cu126 torch==2.11.0
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build
+        run: python -m PyInstaller --noconfirm drift_correct.spec
+
+      - name: Check the build produced an executable and a vendored FFmpeg
+        run: |
+          dir dist\drift_correct\drift_correct.exe
+          dir dist\drift_correct\_internal\ffmpeg_vendor\imageio_ffmpeg\binaries
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: drift_correct-windows
+          path: dist/drift_correct
+          if-no-files-found: error
