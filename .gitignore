@@ -1,0 +1,7 @@
+dist/
+build/
+__pycache__/
+*.nd2
+*.tif
+*.ome.tif
+.DS_Store
