@@ -5,3 +5,7 @@ __pycache__/
 *.tif
 *.ome.tif
 .DS_Store
+*.dmg
+*.7z
+drift_correct_mac
+drift_correct_windows
